@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <columns name="sales_order_columns">
+        <!-- PostEx Order Tracking Number -->
+        <column name="book_at_postex" class="PostEx\Courier\Ui\Component\Listing\Column\TrackingNumber">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Book at PostEx</item>
+                </item>
+            </argument>
+        </column>
+    </columns>
+    <listingToolbar name="listing_top">
+        <massaction name="listing_massaction">
+            <action name="mass_order_postex_bulk_shipment">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">order_postex_bulk_shipment_action</item>
+                        <item name="label" xsi:type="string" translate="true">PostEx Bulk Booking</item>
+                        <item name="url" xsi:type="url" path="postex/order/bulkshipment"/>
+                        <item name="confirm" xsi:type="array">
+                            <item name="title" xsi:type="string" translate="true">PostEx Bulk Booking</item>
+                            <item name="message" xsi:type="string" translate="true">Are you sure you want to do PostEx Bulk Booking for the selected order(s) ?</item>
+                        </item>
+                    </item>
+                </argument>
+            </action>
+        </massaction>
+    </listingToolbar>
+</listing>

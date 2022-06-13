@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <!--<head>
+        &lt;!&ndash; Latest compiled and minified CSS &ndash;&gt;
+        <link src_type="url" rel="stylesheet" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+
+        &lt;!&ndash; Latest compiled JavaScript &ndash;&gt;
+        <script src_type="url" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"/>
+    </head>-->
+    <body>
+        <referenceContainer name="content">
+            <block class="PostEx\Courier\Block\Adminhtml\Order\Logs" name="logs" template="PostEx_Courier::order/view/logs.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,310 @@
+<?php
+/** @var $block PostEx\Courier\Block\Adminhtml\Order\BulkShipView */
+?>
+<?php $orders = $block->getOrderCollections(); ?>
+<?php $orderIds = [] ?>
+<?php $count = 1; ?>
+<form id="form-validate" enctype="multipart/form-data" autocomplete="off" data-mage-init='{"validation":{}}'>
+    <div class="postexShip" id="postexShip" xmlns="http://www.w3.org/1999/html">
+    <div class="postex-heading">
+        <img src="<?php echo $this->getViewFileUrl('PostEx_Courier::images/postex-logo.png'); ?>" alt="PostEx"/><br/>
+        <strong><?= __('Booking with PostEx'); ?></strong>
+        <br/><br/>
+    </div>
+    <div class="postex-order-detail">
+        <table border="1" class="center" style="width:100%">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Order</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Destination</th>
+                <th>COD</th>
+                <th>KG</th>
+                <th>Type</th>
+                <th>Details</th>
+                <th>Validation</th>
+            </tr>
+            </thead>
+            <?php /** @var \Magento\Sales\Api\Data\OrderInterface $order */ ?>
+            <?php foreach ($orders as $order): ?>
+            <tbody>
+            <?php $orderIds[] = $order->getId(); ?>
+            <tr>
+                <td rowspan="4"><?= $count ?></td>
+                <td rowspan="4"><?= $order->getIncrementId(); ?></td>
+                <td rowspan="4"><?= $order->getCustomerName(); ?></td>
+                <td rowspan="4"><?= $order->getShippingAddress() == null ? '' : $order->getShippingAddress()->getTelephone(); ?></td>
+                <td rowspan="4"><?= $order->getShippingAddress() == null ? '' : implode("|", $order->getShippingAddress()->getStreet()); ?></td>
+                <td rowspan="4"><?= $order->getShippingAddress() == null ? '' : $order->getShippingAddress()->getCity(); ?></td>
+                <td rowspan="4">
+                    <label>
+                        <select class="postex-cities" >
+                            <option value="Select City" id ="validate-order-city-<?= $count ?>">Select City</option>
+                            <option value="Islamabad" <?= $order->getShippingAddress()->getCity() =='Islamabad' ? "selected" : ''?> id ="validate-order-city-<?= $count ?>">Islamabad</option>
+                            <option value="Karachi" <?= $order->getShippingAddress()->getCity() =='Karachi' ? "selected" : ''?> id ="validate-order-city-<?= $count ?>">Karachi</option>
+                            <option value="Lahore" <?= $order->getShippingAddress()->getCity() =='Lahore' ? "selected" : ''?> id ="validate-order-city-<?= $count ?>">Lahore</option>
+                            <option value="Rawalpindi" <?= $order->getShippingAddress()->getCity() =='Rawalpindi' ? "selected" : ''?> id ="validate-order-city-<?= $count ?>">Rawalpindi</option>
+                        </select>
+                    </label>
+                </td>
+                <td rowspan="4"><?= $order->getGrandTotal(); ?></td>
+                <td rowspan="4"><?= $order->getWeight(); ?></td>
+                <td rowspan="4">
+                    <label>
+                        <select class="postex-shipment-type">
+                            <option value="Normal">Normal</option>
+                            <option value="Reversed">Reversed</option>
+                            <option value="Replacement">Replacement</option>
+                        </select>
+                    </label>
+                </td>
+                <td rowspan="4"><?= 'Order Details' ?></td>
+                <td rowspan="4"><input type="text" id="validate-order-city-<?= $count ?>-check" class ="validation validate-order-city"></td>
+            </tr>
+            <?php $count++; ?>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <br/>
+    <footer class="modal-footer">
+        <button class="order-bulk-shipment primary" type="button" data-role="action">
+            <span>Upload Booking</span>
+        </button>
+    </footer>
+</div>
+</form>
+
+<script>
+    require(
+        [
+            'jquery'
+        ],
+        function ($) {
+            var validate = true;
+            $('.order-bulk-shipment').click(function (e) {
+                var isValidate = validateOrders();
+                if (isValidate === true) {
+                    $.ajax({
+                        url: '<?= $block->getPostExUrl(); ?>',
+                        type: 'POST',
+                        showLoader: true,
+                        dataType: 'json',
+                        responsive: true,
+                        innerScroll: true,
+                        clickableOverlay: true,
+                        data: {
+                            'orderIds': '<?= serialize($orderIds); ?>'
+                        },
+                        complete: function (response) {
+                            $("#popup-modal").modal("openModal");
+                            var jsonResponse = response.responseJSON;
+                            document.getElementById("booked-packets").innerHTML = jsonResponse.booked;
+                            document.getElementById("unbooked-packets").innerHTML = jsonResponse.unbooked;
+                            var count = 1;
+                            for (var i = 0; i < jsonResponse.Tracking_Numbers.length; ++i) {
+                                $('#bookedsummary tr:last').after("<tr><td>" + count + ": Order # " + jsonResponse.Order_Numbers[i] + "</td><td id='order-tracking'>[Booked: " + jsonResponse.Tracking_Numbers[i] + "]</td></tr>");
+                                count++;
+                            }
+                            //location.reload();
+                        },
+                        error: function (xhr, status, errorThrown) {
+                            console.log('Error happens. Try again.');
+                        }
+                    });
+                }
+            });
+
+            function validateOrders() {
+                var validate = true;
+                $('.postex-order-detail tr').each(function (index, tr) {
+                    if (index !== 0) {
+                        var validateCity = $(tr).find('.postex-cities').val();
+                        if (validateCity === 'Select City') {
+                            validate = false
+                        }
+                    }
+                })
+                if (validate === false) {
+                    alert('City is not valid. Please select the valid City from Destination');
+                }
+                return validate;
+            }
+        }
+    )
+</script>
+
+<!-- bulk order booking summary modal -->
+<div id="popup-modal" style="display:none;">
+    <div class="postex-summary-heading">
+        <img src="<?php echo $this->getViewFileUrl('PostEx_Courier::images/postex-logo.png'); ?>" alt="PostEx"/><br/>
+        <strong><?= __('PostEx Booking Summary'); ?></strong>
+    </div>
+    <div class="postex-summary-detail">
+        <table id="bookedsummary" class="center">
+            <tbody>
+            <tr>
+                <td>Booked Packets:</td>
+                <td id="booked-packets"></td>
+            </tr>
+            <tr>
+                <td>Unbooked Packets:</td>
+                <td id="unbooked-packets"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    require(
+        [
+            'jquery',
+            'Magento_Ui/js/modal/modal'
+        ],
+        function (
+            $,
+            modal
+        ) {
+            var options = {
+                type: 'popup',
+                responsive: true,
+                innerScroll: true,
+                clickableOverlay: true,
+                buttons: [{
+                    text: $.mage.__('Continue'),
+                    class: 'order-bulk-booking-continue',
+                    click: function (data) {
+                        data.preventDefault();
+                        var form = $('#form-validate');
+                        $.ajax({
+                            url: '<?= $block->getRedirectUrl(); ?>',
+                            type: 'POST',
+                            showLoader: true,
+                            dataType: 'json',
+                            complete: function (response) {
+                                //location.reload();
+                                window.location.href = '<?= $block->getSalesOrderGridUrl(); ?>';
+                            },
+                            error: function (xhr, status, errorThrown) {
+                                console.log('Error happens. Try again.');
+                            }
+                        });
+                    }
+                }]
+            };
+
+            var popup = modal(options, $('#popup-modal'));
+        }
+    );
+</script>
+
+<script type="text/javascript">
+    require(['jquery'], function ($) {
+        $(document).ready(function () {
+            validateOrderCity();
+        });
+
+        $('.postex-cities').change(function () {
+                var row = $(this).closest("tr");
+                var onChangedCityVal = row.find(".postex-cities option:selected").val();
+                var optionid = row.find(".postex-cities option:selected").attr('id') + "-check";
+                if (onChangedCityVal === 'Select City') {
+                    $("input[id=" + optionid + ']').addClass('validate-red');
+                    $("#"+optionid).val("non-validated-order");
+                    $("input[id=" + optionid + ']').removeClass('validate-green');
+                } else {
+                    $("input[id=" + optionid + ']').addClass('validate-green');
+                    $("#"+optionid).val("validated-order");
+                    $("input[id=" + optionid + ']').removeClass('validate-red');
+                }
+            }
+        );
+
+        function validateOrderCity() {
+            $('.postex-order-detail tr').each(function(index, tr) {
+                if (index !== 0) {
+                    var validateCity = $(tr).find('.postex-cities').val();
+                    if (validateCity !== 'Select City') {
+                        $(tr).find('.validation').addClass('validate-green');
+                        $(tr).find('.validation').val("validated-order");
+                        $(tr).find('.validation').removeClass('validate-red');
+                    } else {
+                        $(tr).find('.validation').addClass('validate-red');
+                        $(tr).find('.validation').val("non-validated-order");
+                        $(tr).find('.validation').removeClass('validate-green');
+                    }
+                }
+            });
+        }
+    });
+</script>
+<style>
+    .postex-heading, .postex-summary-heading {
+        text-align: center;
+    }
+
+    .postex-order-detail table {
+        width: 925px;
+        height: 150px;
+    }
+
+    .postex-summary-detail table {
+        width: 500px;
+        height: 300px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .postex-order-detail table td {
+        text-align: center;
+    }
+
+    .postex-summary-detail table td {
+        text-align: center;
+    }
+
+    .validate-red {
+        height: 25px;
+        width: 25px;
+        background-color: #FF0000;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .validate-green {
+        height: 25px;
+        width: 25px;
+        background-color: #00FF00;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+
+    .center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    button.order-bulk-shipment {
+        float: right;
+        margin-top: 17px;
+    }
+
+    .page-main-actions {
+        display: none;
+    }
+</style>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="PostEx_Courier::menu"
+             title="PostEx"
+             module="PostEx_Courier"
+             sortOrder="50"
+             resource="PostEx_Courier::menu"
+        />
+        <add id="PostEx_Courier::configuration"
+             title="Configurations"
+             module="PostEx_Courier"
+             sortOrder="10"
+             action="adminhtml/system_config/edit/section/carriers"
+             resource="PostEx_Courier::config"
+             parent="PostEx_Courier::menu"
+        />
+        <add id="PostEx_Courier::load_sheet"
+             title="Generate Loadsheet"
+             module="PostEx_Courier"
+             sortOrder="20"
+             action="postex/order/loadsheet"
+             resource="PostEx_Courier::config"
+             parent="PostEx_Courier::menu"
+        />
+        <add id="PostEx_Courier::logs"
+             title="Logs"
+             module="PostEx_Courier"
+             sortOrder="20"
+             action="postex/order/logs"
+             resource="PostEx_Courier::config"
+             parent="PostEx_Courier::menu"
+        />
+    </menu>
+</config>

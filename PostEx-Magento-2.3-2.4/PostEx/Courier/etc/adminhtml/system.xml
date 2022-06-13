@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="carriers">
+            <group id="postex" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>PostEx</label>
+                <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="token" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1">
+                    <label>Token</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="environment_mode" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1">
+                    <label>Environment Mode</label>
+                    <source_model>PostEx\Courier\Model\Config\Source\EnvironmentMode</source_model>
+                </field>
+                <field id="shipment_type" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1">
+                    <label>Shipment Type</label>
+                    <source_model>PostEx\Courier\Model\Config\Source\ShipmentType</source_model>
+                </field>
+                <field id="handling_type" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1">
+                    <label>Handling Type</label>
+                    <source_model>Magento\Shipping\Model\Source\HandlingType</source_model>
+                </field>
+                <field id="consignee_details" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1">
+                    <label>Consignee Details</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="remarks" translate="label comment" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
+                    <label>Remarks</label>
+                </field>
+                <field id="default_products" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1">
+                    <label>Default Products</label>
+                </field>
+                <field id="print_item_name_on_label" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Print Item Name on Label</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="print_sku_on_label" translate="label comment" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Print SKU on Label</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="auto_calculate_weight" translate="label comment" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto Calculate Weight</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="auto_calculate_pieces" translate="label comment" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto Calculate Pieces</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="calculate_non_cod_as_zero" translate="label comment" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Calculate Non-COD as Zero</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="add_postex_order_status" translate="label comment" type="select" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add PostEx Order Status</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

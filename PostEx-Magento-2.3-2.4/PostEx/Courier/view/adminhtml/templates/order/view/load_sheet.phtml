@@ -1,0 +1,308 @@
+<?php
+/** @var $block PostEx\Courier\Block\Adminhtml\Order\LoadSheet */
+$pickup = $block->getPickUpAddress();
+$unbookedOrders = $block->getUnBookedOrders();
+?>
+
+<div class="postex-heading">
+    <img src="<?php echo $this->getViewFileUrl('PostEx_Courier::images/postex-logo.png'); ?>" alt="PostEx"/><br/>
+    <strong><?= __('Generate Loadsheet'); ?></strong>
+    <br/><br/>
+</div>
+<br>
+<form method="post" action="<?= $block->getGenerateLoadByDatesUrl() ?>" id="hxs-sheet-form" enctype="multipart/form-data" autocomplete="off">
+    <div class="filter-by-date-range" id="date-range">
+        <label>
+            <input class="form-control" type="text" id="date-from" name="hxs_date_from" value="" autocomplete="off"
+                   placeholder="From Date" style="height: 38px; font-size: 16px;">
+        </label>
+        <label>
+            <input class="form-control" type="text" id="date-to" name="hxs_date_to" value="" autocomplete="off"
+                   placeholder="To Date" style="height: 38px; font-size: 16px;">
+        </label>
+        <input type="hidden" name="form_key" value="<?php echo $block->getFormKey(); ?>" />
+    </div>
+    <div class="btn-search">
+        <button class="btn btn-outline-success" id="hxs_date_btn" name="hxs_date_btn" type="submit">Search</button>
+    </div>
+</form>
+<form method="post" action="<?=$block->getGenerateLoadSheetUrl()?>" id="hxs-sheet-form" enctype="multipart/form-data" autocomplete="off">
+    <div id="postex-loadsheet-filters">
+        <div class="dropdown-pickup-address">
+            <div class="col-8 float-start">
+                <label for="hxs_pickup"></label>
+                <select class="form-select" id="hxs_pickup" name="hxs_pickup" required style="height: 38px;">
+                    <option selected value="">Select Pickup Address</option>
+                    <?php
+                    foreach ($pickup['dist'] as $address) {
+                        echo "<option value='" . $address['address'] . "%" . $address['cityName'] . "%" . $address['phone1'] . "'>" . $address['address'] . "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+        <input type="hidden" name="form_key" value="<?php echo $block->getFormKey(); ?>" />
+        <div class="btn-generate-loadsheet">
+            <button class="btn btn-success float-end" name="hxs_loadsheet_btn" type="submit">Generate Loadsheet</button>
+        </div>
+    </div>
+
+    <br>
+
+    <table class="table table-bordered table-sm table-responsive hxs-upload-table">
+        <thead class="table-dark" style="text-align: center;">
+        <tr>
+            <th scope="col"><input type="checkbox" class="form-check-input bulkcheckbox" value="" id="bulkcheckbox" name="bulkcheckbox"></th>
+            <th scope="col">#</th>
+            <th scope="col">Date</th>
+            <th scope="col">Order</th>
+            <th scope="col">Name</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Address</th>
+            <th scope="col">City</th>
+            <th scope="col">COD</th>
+            <th scope="col">Tracking</th>
+            <th scope="col">Status</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <?php
+        $count = 1;
+        $parcels = $unbookedOrders['dist'];
+        $parcels = array_reverse($parcels);
+
+        foreach ($parcels as $parcel) {
+            $transactionDate = $parcel['transactionDate'];
+            $orderRefNumber = $parcel['orderRefNumber'];
+            $customerName = $parcel['customerName'];
+            $customerPhone = $parcel['customerPhone'];
+            $deliveryAddress = $parcel['deliveryAddress'];
+            $cityName = $parcel['cityName'];
+            $invoicePayment = $parcel['invoicePayment'];
+            $trackingNumber = $parcel['trackingNumber'];
+            $transactionStatus = $parcel['transactionStatus']; ?>
+
+            <tr>
+                <td width="2%">
+                    <input type="checkbox" class="form-check-input singlecheckbox" value="" id="check_<?= $count ?>" name="order[<?= $count ?>][check]" >
+                </td>
+
+                <td width= "4%">
+                    <input type="text" class="form-control form-control-sm hxs-center" readonly id="<?= $count ?>" name="<?= $count ?>" value="<?= $count ?>" />
+                </td>
+
+                <td width= "10%">
+                    <input type="text" class="form-control form-control-sm hxs-center" readonly id="" name="" value="<?= $transactionDate ?>" required />
+                </td>
+
+                <td width= "8%">
+                    <input type="text" class="form-control form-control-sm hxs-center" readonly id="" name="" value="<?= $orderRefNumber ?>" required />
+                </td>
+
+                <td width= "10%">
+                    <input type="text" class="form-control form-control-sm" readonly id="" name="" value="<?= $customerName ?>" required />
+                </td>
+
+                <td width= "10%">
+                    <input type="text" class="form-control form-control-sm hxs-center" readonly id="" name="" value="<?= $customerPhone ?>" required />
+                </td>
+
+                <td width= "20%">
+                    <input type="text" class="form-control form-control-sm" readonly id="" name="" value="<?= $deliveryAddress ?>" required />
+                </td>
+
+                <td width= "10%">
+                    <input type="text" class="form-control form-control-sm hxs-center" readonly id="" name="" value="<?= $cityName ?>" required />
+                </td>
+
+                <td width= "6%">
+                    <input type="text" class="form-control form-control-sm hxs-center" readonly id="" name="" value="<?= $invoicePayment ?>" required />
+                </td>
+
+                <td width= "12%">
+                    <input type="text" class="form-control form-control-sm hxs-center" readonly id="tracking_<?= $count ?>" name="order[<?= $count ?>][tracking]" value="<?= $trackingNumber ?>" required />
+                </td>
+
+                <td width= "15%">
+                    <input type="text" class="form-control form-control-sm hxs-center" readonly id="" name="" value="<?= $transactionStatus ?>" required />
+                </td>
+            </tr>
+
+            <?php
+            $count++;
+        }
+        ?>
+        </tbody>
+    </table>
+</form>
+
+<script type="text/javascript">
+    require(['jquery'], function ($) {
+        $(document).on("click", "#hxs_date_btn", function () {
+            $('#date-range').prop('required', false);
+        });
+    });
+</script>
+
+<script>
+    require([
+        'jquery',
+        'mage/mage',
+        'mage/calendar'
+    ], function ($) {
+        $('#date-range').dateRange({
+            buttonText: 'Select Date',
+            from: {
+                id: 'date-from'
+            },
+            to: {
+                id: 'date-to'
+            }
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    require(['jquery'], function ($) {
+        $(function ($) {
+            $('body').on('change', '#bulkcheckbox', function (e) {
+                $('.singlecheckbox').prop('checked', e.currentTarget.checked);
+                $('.singlecheckbox').change();
+            });
+        });
+    });
+</script>
+
+<style>
+    .hxs-upload-table tr {
+        font-size: 14px;
+    }
+
+    .hxs-upload-table td {
+        padding: 2px 3px !important;
+    }
+
+    .hxs-upload-table .form-control {
+        font-size: 15px;
+        border: none;
+    }
+
+    .form-check-input:checked {
+        background-color: unset;
+    }
+
+    .wp-core-ui select {
+        min-height: 38px;
+    }
+
+    .postex-heading {
+        text-align: center;
+    }
+
+    .page-main-actions {
+        display: none;
+    }
+
+    #postex-loadsheet-filters {
+        width: 100%;
+        text-align: center;
+    }
+
+    .filter-by-date-range {
+        display: flex;
+        float: left;
+        margin-top: 18px;
+    }
+
+    .btn-search {
+        display: inline-block;
+        margin-left: 293px;
+        float: left;
+    }
+
+    .btn-generate-loadsheet {
+        display: inline-block;
+        float: right;
+    }
+
+    .btn-outline-success {
+        color: white;
+        font-size: 18px;
+        background-color: #eb5202;
+    }
+    .btn-success {
+        color: #fff;
+        background-color: #eb5202;
+        padding: 10px 20px;
+        font-size: 15px;
+        margin-top: 18px;
+    }
+
+    .dropdown-pickup-address {
+        display: inline-block;
+        font-size: 15px;
+        height: 1px;
+        margin-top: 20px;
+    }
+
+    .btn-search {
+        display: inline-block;
+        margin-left: 12px;
+        float: left;
+        margin-top: 18px;
+    }
+
+    .form-check-input {
+        position: inherit;
+        margin-top: 0.3rem;
+        margin-left: 0.5rem;
+    }
+</style>
+
+<style>
+    .table-dark {
+        color: #fff;
+        background-color: #343a40;
+    }
+
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-bordered td, .table-bordered th {
+        border: 1px solid #dee2e6;
+    }
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+    *, ::after, ::before {
+        box-sizing: border-box;.form-control
+    }
+
+    .form-control:disabled, .form-control[readonly] {
+        background-color: #e9ecef;
+        opacity: 1;
+    }
+    .form-control-sm {
+        height: calc(1.5em + 0.5rem + 2px);
+        padding: 0.25rem 0.5rem;
+        font-size: .875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+    .form-control {
+        width: 100%;
+        height: calc(1.5em + 0.75rem + 2px);
+        padding: 0.375rem 0.75rem;
+        font-weight: 400;
+        line-height: 1.5;
+        border: 1px solid #ced4da;
+    }
+</style>
